@@ -2,9 +2,7 @@
 
 try {
     $db = new PDO("mysql:host=localhost;dbname=filmclub", "root", "");
-    $id = $_GET["id"];
-    $query = $db->prepare("SELECT * FROM `film` WHERE id = :id");
-    $query->bindParam(":id", $id);
+    $query = $db->prepare("SELECT * FROM `film`");
     $query->execute();
     $result = $query->fetchAll(PDO::FETCH_ASSOC);
 }catch (PDOException $e){
@@ -49,15 +47,24 @@ $genre_required = "genre invullen";
 $errors = [];
 $inputs = [];
 
-if(isset($_POST["send"])){
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $title = $_POST["titel"];
     $genre = $_POST["genre"];
+
+    echo $title;
+    echo $genre;
 
     $query = $db->prepare("INSERT INTO film (titel, genre) values (:titel, :genre)");
 
     $query->bindParam(":titel", $title);
     $query->bindParam(":genre", $genre);
+
+    if (empty($title)) {
+        echo $titel_required;
+    }else if (empty($genre)) {
+        echo $genre_required;
+    }
 
     $result = $query->execute();
 }
